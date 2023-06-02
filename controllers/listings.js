@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import multer from 'multer';
 import Listing from "../models/listing.js";
+import User from "../models/user.js";
 //const multer  = require('multer')
 
 const DIR = './public/images';
@@ -51,22 +52,14 @@ export const getListing = async (req, res) => {
 }
 
 export const addListing = async (request, response) => {
-    const { name, email, phone_no, password, role } = request.body;
-    console.log(request.body.name);
-    const newUser = new User({ name, email, phone_no, password, role });
+    const { user_id, title, description, address, area_name, rent, area, type, bedroom_count, bathroom_count, image_url } = request.body;
+    console.log(request.body);
+    const newListing = new Listing({ user_id, title, description, address, area_name, rent, area, type, bedroom_count, bathroom_count, image_url });
 
     try {
-        await newUser.save();
-        response.status(201).json(newUser);
+        await newListing.save();
+        response.status(201).json(newListing);
     } catch (error) {
-        if(error.code === 11000) {
-            if(JSON.stringify(error.keyPattern).includes("email")) {               
-                response.status(409).json({ message: "Email already exists please use different email" });
-            } else {
-                response.status(409).json({ message: "Mobile already exists please use different mobile number" });
-            } 
-        } else {
-            response.status(500).json({ message: error.message });
-        }        
+        response.status(500).json({ message: error.message });  
     }
 }
